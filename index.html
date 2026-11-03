@@ -132,8 +132,8 @@ textarea{width:100%;margin-top:10px;border:2px solid var(--line);border-radius:1
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 /* ===== CONFIGURATION SUPABASE : à remplacer par vos valeurs (Project Settings > API) ===== */
-const SUPABASE_URL = "https://jrwteizqpyyxyyjdmhvu.supabase.co";
-const SUPABASE_ANON_KEY = "sb_secret_0_zeR0xbQKvGeEX7h3J9sw_bKT96WYr";
+const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIQUE";
 /* La clé "anon" est publique par conception : la sécurité repose sur la connexion et les règles RLS (voir supabase.sql). */
 
 const T=["Insuffisant","Partiel","Solide","Expert"];
@@ -272,7 +272,7 @@ $("#copy").onclick=async()=>{try{await navigator.clipboard.writeText(summary());
 async function login(){
  $("#lerr").textContent="";
  const {error}=await sb.auth.signInWithPassword({email:$("#lmail").value.trim(),password:$("#lpass").value});
- if(error)$("#lerr").textContent="Connexion refusée : e-mail ou mot de passe incorrect.";
+ if(error){const m=error.message||"";const h=/invalid login/i.test(m)?"e-mail ou mot de passe incorrect, ou compte inexistant dans ce projet.":/not confirmed/i.test(m)?"l’adresse e-mail n’est pas confirmée (cochez « Auto Confirm User » ou confirmez l’utilisateur dans Supabase).":/api key|apikey|jwt/i.test(m)?"la clé SUPABASE_ANON_KEY est invalide.":/fetch|network/i.test(m)?"l’URL SUPABASE_URL est incorrecte ou injoignable.":"";$("#lerr").textContent="Connexion refusée"+(h?" : "+h:".")+" Détail technique : "+m;console.error(error);}
 }
 $("#lgo").onclick=login;
 $("#lpass").addEventListener("keydown",e=>{if(e.key==="Enter")login();});
