@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portail d’entretien – Technicien(ne) support informatique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d1b3a;--mut:#615f7d;--bg:#f4f3fb;--card:#fff;--line:#e4e2f2;
+--c0:#3b6cf6;--c1:#8b4df0;--c2:#12a97a;--c3:#0fa3b8;--c4:#ee5a4f;--c5:#f2a01c;--c6:#d6336c;--c7:#e0447f}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:linear-gradient(120deg,#2a1f7a,#8b4df0 55%,#ee5a4f);color:#fff;padding:20px 24px 72px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;justify-content:flex-end;align-items:center;gap:12px;font-size:.85rem;margin-bottom:8px}
+.top button{font:inherit;font-size:.8rem;background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:8px;padding:5px 12px;cursor:pointer}
+h1{font-size:clamp(1.6rem,4vw,2.5rem);margin:0 0 6px;font-weight:800;letter-spacing:-.02em}
+header p{margin:0;opacity:.9;max-width:62ch}
+.cand{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:22px}
+.cand label{font-size:.8rem;opacity:.85;display:block;margin-bottom:4px}
+.cand input,.cand select{width:100%;padding:10px 12px;border:0;border-radius:10px;font:inherit;background:rgba(255,255,255,.95);color:var(--ink)}
+.candbar{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;align-items:flex-end}
+.candbar>div{flex:1;min-width:220px}
+.candbar label{font-size:.8rem;opacity:.85;display:block;margin-bottom:4px}
+.candbar select{width:100%;padding:10px 12px;border:0;border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
+.hbtn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:#fff;color:#2a1f7a}
+.hbtn.d{background:rgba(255,255,255,.2);color:#fff}
+#status{font-size:.82rem;opacity:.9;margin-left:auto}
+main{margin-top:-44px;padding:0 16px 120px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;background:var(--card);padding:12px;border-radius:16px;box-shadow:0 8px 28px rgba(42,31,122,.15)}
+.tab{border:2px solid transparent;background:color-mix(in srgb,var(--c) 12%,#fff);color:var(--c);font:inherit;font-weight:600;font-size:.88rem;padding:8px 14px;border-radius:999px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.tab:hover{border-color:var(--c)}
+.tab[aria-pressed=true]{background:var(--c);color:#fff}
+.tab small{background:rgba(0,0,0,.12);border-radius:999px;padding:0 8px;font-weight:600}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0}
+.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:var(--ink);color:#fff}
+.btn.alt{background:#fff;color:var(--ink);border:2px solid var(--line)}
+.btn.red{background:#fff;color:#c0392b;border:2px solid #f3c6c0}
+.btn:hover,.hbtn:hover{filter:brightness(1.12)}
+:focus-visible{outline:3px solid #f2a01c;outline-offset:2px}
+select{font:inherit;padding:9px 12px;border-radius:10px;border:2px solid var(--line);background:#fff}
+.sec-title{display:flex;align-items:center;gap:12px;margin:26px 0 4px}
+.sec-title i{width:14px;height:34px;border-radius:6px;background:var(--c)}
+.sec-title h2{margin:0;font-size:1.35rem}
+.sec-desc{margin:0 0 12px 26px;color:var(--mut);font-size:.92rem}
+.q{background:var(--card);border-radius:16px;border-left:8px solid var(--c);padding:18px 20px;margin:12px 0;box-shadow:0 2px 10px rgba(29,27,58,.06)}
+.q.pick{animation:pick 1.4s}
+@keyframes pick{0%,60%{box-shadow:0 0 0 5px var(--c)}100%{box-shadow:0 2px 10px rgba(29,27,58,.06)}}
+.q.done{background:color-mix(in srgb,var(--c) 5%,#fff)}
+.meta{display:flex;gap:8px;margin-bottom:6px}
+.badge{font-size:.75rem;font-weight:600;padding:2px 10px;border-radius:999px;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c)}
+.q h3{margin:0 0 8px;font-size:1.08rem;font-weight:600;max-width:75ch}
+details{margin:8px 0 12px}
+summary{cursor:pointer;color:var(--c);font-weight:600;font-size:.9rem}
+details ul{margin:8px 0 0;padding-left:20px;color:var(--mut);font-size:.92rem}
+.rate{display:flex;flex-wrap:wrap;gap:8px}
+.rate button{font:inherit;font-size:.86rem;font-weight:600;padding:7px 12px;border-radius:10px;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.rate button:hover{border-color:var(--c)}
+.rate button[aria-pressed=true]{background:var(--c);border-color:var(--c);color:#fff}
+textarea{width:100%;margin-top:10px;border:2px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;font-size:.9rem;resize:vertical;min-height:40px}
+#synth{background:var(--card);border-radius:20px;padding:24px;margin-top:36px;box-shadow:0 8px 28px rgba(42,31,122,.12)}
+#synth h2{margin:0 0 4px}
+.bar{display:grid;grid-template-columns:minmax(150px,230px) 1fr 54px;gap:12px;align-items:center;margin:10px 0;font-size:.92rem}
+.track{height:14px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;background:var(--c);border-radius:99px;transition:width .4s}
+.verdict{margin:18px 0;padding:16px 20px;border-radius:14px;font-weight:600;background:#eeeeff}
+#bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid var(--line);padding:10px 16px;z-index:5}
+#bottom .wrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+#bottom .track{flex:1;min-width:120px}
+#bottom b{font-size:1.1rem}
+#empty{background:var(--card);border-radius:16px;padding:40px 24px;text-align:center;color:var(--mut);box-shadow:0 8px 28px rgba(42,31,122,.15)}
+#login{position:fixed;inset:0;z-index:20;background:linear-gradient(120deg,#2a1f7a,#8b4df0 55%,#ee5a4f);display:flex;align-items:center;justify-content:center;padding:16px}
+.lbox{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.lbox h2{margin:0 0 4px}.lbox p{margin:0 0 18px;color:var(--mut);font-size:.92rem}
+.lbox input{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px}
+.lbox .btn{width:100%}
+#lerr{color:#c0392b;font-size:.88rem;margin-top:10px;min-height:1.2em}
+.hide{display:none!important}
+@media(max-width:620px){.bar{grid-template-columns:1fr 50px}.bar .track{grid-column:1/-1;order:3}}
+@media print{header{background:#2a1f7a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.tabs,.tools,#bottom,.rate,.candbar,.top{display:none}.q{break-inside:avoid}details{display:block}.fill,.q{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="login">
+ <div class="lbox">
+  <h2>Connexion</h2>
+  <p>Accès réservé aux évaluateurs. Les évaluations sont stockées dans Supabase.</p>
+  <label for="lmail" class="hide">E-mail</label><input id="lmail" type="email" placeholder="E-mail" autocomplete="username">
+  <label for="lpass" class="hide">Mot de passe</label><input id="lpass" type="password" placeholder="Mot de passe" autocomplete="current-password">
+  <button class="btn" id="lgo">Se connecter</button>
+  <div id="lerr" role="alert"></div>
+ </div>
+</div>
+
+<header><div class="wrap">
+<div class="top"><span id="who"></span><button id="logout">Se déconnecter</button></div>
+<h1>Entretien technique : Technicien(ne) support informatique</h1>
+<p>Hyteck · DSI, pôle Infrastructure. Support N2 de proximité et préparation du matériel à Paris. Questions tirées de la fiche de poste du 29/10/2026.</p>
+<div class="candbar">
+ <div><label for="csel">Candidat(e)</label><select id="csel"></select></div>
+ <button class="hbtn" id="cnew">+ Nouveau candidat</button>
+ <span id="status" role="status"></span>
+</div>
+<div class="cand" id="cfields">
+<div><label for="nom">Nom et prénom</label><input id="nom" placeholder="Nom et prénom"></div>
+<div><label for="date">Date de l’entretien</label><input id="date" type="date"></div>
+<div><label for="int">Évaluateur</label><input id="int" placeholder="Votre nom"></div>
+</div></div></header>
+
+<main><div class="wrap">
+<div id="empty">Aucun candidat sélectionné. Cliquez sur « Nouveau candidat » pour démarrer un entretien.</div>
+<div id="app" class="hide">
+<nav class="tabs" id="tabs" aria-label="Thèmes"></nav>
+<div class="tools">
+<select id="niv" aria-label="Niveau"><option value="">Tous les niveaux</option><option>Essentiel</option><option>Approfondi</option><option>Mise en situation</option></select>
+<button class="btn" id="rand">🎲 Question au hasard</button>
+<button class="btn alt" id="print">Imprimer / PDF</button>
+<button class="btn alt" id="copy">Copier la synthèse</button>
+<button class="btn red" id="del">Supprimer ce candidat</button>
+</div>
+<div id="list"></div>
+<section id="synth"><h2>Synthèse de l’entretien</h2><p style="color:var(--mut);margin:0 0 12px">Calculée à partir des notes ci-dessus. Les questions non notées sont ignorées.</p><div id="bars"></div><div class="verdict" id="verdict"></div>
+<label for="gen" style="font-weight:600">Avis général</label><textarea id="gen" placeholder="Points forts, points de vigilance, décision…"></textarea></section>
+</div>
+</div></main>
+
+<div id="bottom" class="hide"><div class="wrap"><span>Progression : <b id="prog">0/0</b></span><div class="track"><div class="fill" id="pfill" style="background:var(--c1);width:0"></div></div><span>Score global : <b id="gscore">–</b></span></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* ===== CONFIGURATION SUPABASE : à remplacer par vos valeurs (Project Settings > API) ===== */
+const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIQUE";
+/* La clé "anon" est publique par conception : la sécurité repose sur la connexion et les règles RLS (voir supabase.sql). */
+
+const T=["Insuffisant","Partiel","Solide","Expert"];
+const CATS=[
+{id:"win",n:"Windows & préparation",c:"var(--c0)",d:"Préparer, configurer, tester et déployer les postes et périphériques.",q:[
+["Essentiel","Décrivez les étapes pour préparer un poste Windows neuf avant remise à un nouvel arrivant.",["Mises à jour Windows et pilotes","Installation des logiciels du catalogue DSI","Antivirus / protections et chiffrement","Test final, étiquetage et inventaire"]],
+["Essentiel","Un poste démarre très lentement. Comment diagnostiquez-vous ?",["Gestionnaire des tâches, disque, RAM, démarrage","État du disque (SMART) et mises à jour","Logiciels au démarrage, malware","Décision : réparer, réinstaller ou remplacer"]],
+["Approfondi","Quels outils utilisez-vous pour déployer et gérer des postes à grande échelle ?",["Intune / Autopilot, MDT, SCCM ou équivalent","Images et profils de configuration","Gestion des stratégies (GPO)","Suivi de conformité"]],
+["Approfondi","Un utilisateur n’a plus de profil après une mise à jour. Que faites-vous ?",["Vérifier le profil temporaire et le registre","Récupérer les données utilisateur","Sauvegarde / OneDrive (Known Folder Move)","Recréer le profil, documenter la cause"]]]},
+{id:"m365",n:"Microsoft 365 & accès",c:"var(--c1)",d:"Administrer M365 dans la limite des droits délégués, gérer comptes et accès.",q:[
+["Essentiel","Quel est votre processus pour créer le compte d’un nouvel arrivant ?",["Demande validée (RH / manager)","Licence, messagerie, groupes Teams","MFA et droits strictement validés","Traçabilité dans le ticket"]],
+["Essentiel","Un utilisateur ne reçoit plus ses mails Outlook. Comment procédez-vous ?",["Webmail vs client lourd","Connexion, licence, quota, règles","Profil Outlook, mode cache","Message trace dans le centre d’administration"]],
+["Approfondi","Que faire si un utilisateur est bloqué par l’authentification multifacteur (MFA) ?",["Vérifier l’identité avant toute action","Réinitialiser les méthodes MFA selon la procédure","Réenrôlement de l’application","Respect des droits délégués"]],
+["Approfondi","Comment gérez-vous un départ de collaborateur côté M365 ?",["Désactivation du compte, révocation des sessions","Transfert / archivage mails et OneDrive","Récupération des licences","Retour du matériel et effacement"]]]},
+{id:"mob",n:"Android & iOS",c:"var(--c2)",d:"Configurer et supporter les terminaux mobiles de l’entreprise.",q:[
+["Essentiel","Comment configurez-vous un smartphone professionnel avant remise ?",["Enrôlement MDM (Intune ou équivalent)","Comptes, messagerie, Teams, applications","Politique de verrouillage et chiffrement","Test et inventaire (IMEI, n° de série)"]],
+["Essentiel","Un utilisateur a perdu son téléphone professionnel. Que faites-vous ?",["Verrouiller / localiser / effacer à distance","Déclarer l’incident de sécurité","Révoquer sessions et accès","Remplacement et traçabilité"]],
+["Approfondi","Quelles différences de gestion entre Android Enterprise et iOS supervisé ?",["Modes d’enrôlement (profil pro, ADE / DEP)","Contrôles possibles par le MDM","Gestion des applications","Limites sur appareils personnels"]]]},
+{id:"res",n:"Réseau",c:"var(--c3)",d:"Ethernet, Wi-Fi, bases IP / DNS / DHCP, brassage et interventions simples.",q:[
+["Essentiel","Un poste n’a plus d’accès à Internet. Décrivez votre démarche.",["Câble / Wi-Fi, voyants, adresse IP (ipconfig)","Test passerelle, puis DNS (ping, nslookup)","Isoler : poste, prise ou réseau","Escalade documentée si besoin"]],
+["Essentiel","Expliquez ce que font DHCP et DNS, avec un exemple de panne.",["DHCP : attribution automatique des adresses","DNS : résolution des noms","Adresse 169.254.x.x = pas de DHCP","Nom non résolu mais ping IP OK = DNS"]],
+["Approfondi","Le Wi-Fi d’un étage de bureaux est instable. Comment enquêtez-vous ?",["Portée du problème (un ou tous les appareils)","Signal, interférences, bande 2,4 / 5 GHz","Borne, câblage, PoE, charge","Coordination avec le prestataire / réseau"]],
+["Approfondi","Que contrôlez-vous lors d’un brassage dans une baie ?",["Repérage prise / port du switch","Câbles testés, étiquetage","Respect de la procédure et du plan","Documentation de l’intervention"]]]},
+{id:"n2",n:"Support N2 & tickets",c:"var(--c4)",d:"Diagnostic structuré, priorisation, escalade documentée, suivi jusqu’à la clôture.",q:[
+["Essentiel","Comment qualifiez-vous et priorisez-vous un ticket ?",["Impact (nombre d’utilisateurs, site, activité)","Urgence et SLA","Informations à recueillir","Communication à l’utilisateur"]],
+["Approfondi","Quand et comment escaladez-vous un incident vers le N3 ?",["Diagnostic déjà réalisé et documenté","Symptômes, étapes testées, logs, captures","Suivi de la résolution avec les équipes","Information de l’utilisateur"]],
+["Approfondi","Quels outils de prise en main à distance avez-vous utilisés ? Comment sécurisez-vous leur usage ?",["TeamViewer, Quick Assist, Intune, AnyDesk…","Consentement de l’utilisateur","Traçabilité de la session","Données confidentielles à l’écran"]],
+["Mise en situation","Un lundi matin, la messagerie d’un service entier est indisponible. Que faites-vous ?",["Évaluer l’étendue (un, plusieurs ou tous les utilisateurs)","Vérifier l’état du service M365 et la connectivité","Informer les utilisateurs, proposer un contournement","Escalade documentée et suivi jusqu’à la clôture"]]]},
+{id:"parc",n:"Parc, stocks & cycle de vie",c:"var(--c5)",d:"Inventaire, affectations, garanties, stocks, maintenance et reconditionnement.",q:[
+["Essentiel","Comment tenez-vous un inventaire fiable du parc ?",["Outil d’inventaire, n° de série, affectation","Mise à jour à chaque mouvement","Garanties et dates de renouvellement","Contrôles et rapprochements réguliers"]],
+["Essentiel","Comment anticipez-vous les besoins de réapprovisionnement ?",["Seuils minimaux, consommation moyenne","Délais fournisseurs","Arrivées prévues, renouvellements","Alerte au responsable"]],
+["Approfondi","Décrivez le circuit d’un matériel défectueux jusqu’à son retour de maintenance.",["Diagnostic, déclaration de garantie / RMA","Matériel de remplacement","Suivi du prestataire","Mise à jour de l’inventaire"]],
+["Approfondi","Comment organisez-vous un renouvellement de parc sur plusieurs sites ?",["Planification avec les sites","Préparation en amont par lots","Remise, récupération de l’ancien matériel","Communication et assistance post-déploiement"]]]},
+{id:"sec",n:"Sécurité & traçabilité",c:"var(--c6)",d:"Effacement des données, incidents de sécurité, confidentialité, BPF.",q:[
+["Essentiel","Un collaborateur rend son ordinateur. Comment effacez-vous les données de façon sécurisée ?",["Procédure DSI, effacement certifié","Chiffrement et réinitialisation","Attestation / trace de l’effacement","Reconditionnement ou mise au rebut"]],
+["Essentiel","Un utilisateur signale un mail suspect sur lequel il a cliqué. Que faites-vous ?",["Isoler le poste, ne pas minimiser","Signalement immédiat à la DSI","Changement des mots de passe, vérification du compte","Pédagogie auprès de l’utilisateur"]],
+["Approfondi","Que savez-vous des BPF (bonnes pratiques de fabrication) et de leur impact sur un poste informatique ?",["Hygiène et traçabilité","Rigueur des procédures et documentation","Respect des règles du site","Capacité à poser des questions"]]]},
+{id:"soft",n:"Posture & communication",c:"var(--c7)",d:"Autonomie, service, pédagogie, multisite, anglais technique.",q:[
+["Mise en situation","Un utilisateur est stressé et agressif car son poste est en panne. Comment réagissez-vous ?",["Écoute et reformulation","Calme, transparence sur les délais","Solution ou contournement rapide","Suivi après résolution"]],
+["Mise en situation","Vous avez trois demandes urgentes en même temps sur trois sites. Comment arbitrez-vous ?",["Critères d’impact et d’urgence","Communication aux demandeurs","Délégation ou appui si nécessaire","Compte rendu au responsable"]],
+["Essentiel","Parlez d’une expérience où vous avez dû vous adapter à une nouvelle technologie.",["Démarche d’apprentissage","Résultat concret","Partage avec l’équipe","Veille personnelle"]],
+["Approfondi","Lisez-vous une documentation en anglais ? Donnez un exemple récent.",["Documentation technique ou forums","Niveau écrit opérationnel","Oral possible (un plus)","Exemple concret"]]]}
+];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const all=[];CATS.forEach(c=>c.q.forEach((q,i)=>all.push({cat:c,id:c.id+i,niv:q[0],t:q[1],a:q[2]})));
+let sb=null,cur="all",candId=null,st={},timers={};
+
+function status(t,err){const s=$("#status");s.textContent=t;s.style.color=err?"#ffd2cc":"";}
+function configured(){return !SUPABASE_URL.includes("VOTRE-PROJET")&&!SUPABASE_ANON_KEY.includes("VOTRE_CLE");}
+function debounce(k,fn,ms=800){clearTimeout(timers[k]);status("Modifications en attente…");timers[k]=setTimeout(fn,ms);}
+
+/* ---------- Supabase ---------- */
+async function loadCands(selectId){
+ const {data,error}=await sb.from("candidates").select("id,name,interview_date").order("created_at",{ascending:false});
+ if(error){status("Erreur de chargement : "+error.message,true);return;}
+ $("#csel").innerHTML='<option value="">— Choisir un candidat —</option>'+data.map(c=>`<option value="${c.id}">${esc(c.name||"Sans nom")}${c.interview_date?" ("+c.interview_date+")":""}</option>`).join("");
+ if(selectId){$("#csel").value=selectId;await openCand(selectId);}else showCand(false);
+}
+async function openCand(id){
+ if(!id){candId=null;showCand(false);return;}
+ status("Chargement…");
+ const [c,a]=await Promise.all([sb.from("candidates").select("*").eq("id",id).single(),sb.from("answers").select("question_id,rating,notes").eq("candidate_id",id)]);
+ if(c.error||a.error){status("Erreur : "+(c.error||a.error).message,true);return;}
+ candId=id;st={};a.data.forEach(r=>st[r.question_id]={r:r.rating,n:r.notes||""});
+ $("#nom").value=c.data.name||"";$("#date").value=c.data.interview_date||"";$("#int").value=c.data.evaluator||"";$("#gen").value=c.data.general_notes||"";
+ showCand(true);tabs();list();stats();status("Chargé");
+}
+function showCand(on){$("#app").classList.toggle("hide",!on);$("#empty").classList.toggle("hide",on);$("#bottom").classList.toggle("hide",!on);$("#cfields").classList.toggle("hide",!on);}
+async function saveCand(){
+ if(!candId)return;
+ const {error}=await sb.from("candidates").update({name:$("#nom").value,interview_date:$("#date").value||null,evaluator:$("#int").value,general_notes:$("#gen").value,updated_at:new Date().toISOString()}).eq("id",candId);
+ if(error)status("Échec de l’enregistrement : "+error.message,true);else{status("Enregistré ✓");const o=$("#csel").selectedOptions[0];if(o)o.textContent=($("#nom").value||"Sans nom")+($("#date").value?" ("+$("#date").value+")":"");}
+}
+async function saveAnswer(qid){
+ const s=st[qid]||{};
+ const {error}=await sb.from("answers").upsert({candidate_id:candId,question_id:qid,rating:s.r??null,notes:s.n||""},{onConflict:"candidate_id,question_id"});
+ status(error?"Échec de l’enregistrement : "+error.message:"Enregistré ✓",!!error);
+}
+
+/* ---------- Interface ---------- */
+function tabs(){
+ $("#tabs").innerHTML=[{id:"all",n:"Tous les thèmes",c:"var(--c1)",q:all}].concat(CATS).map(c=>`<button class="tab" style="--c:${c.c}" data-id="${c.id}" aria-pressed="${cur===c.id}">${c.n}<small>${c.q.length}</small></button>`).join("");
+ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{cur=b.dataset.id;tabs();list();});
+}
+function list(){
+ const niv=$("#niv").value;let h="";
+ CATS.filter(c=>cur==="all"||c.id===cur).forEach(c=>{
+  const qs=all.filter(q=>q.cat===c&&(!niv||q.niv===niv));if(!qs.length)return;
+  h+=`<div style="--c:${c.c}"><div class="sec-title"><i></i><h2>${c.n}</h2></div><p class="sec-desc">${c.d}</p>`;
+  qs.forEach(q=>{const s=st[q.id]||{};
+   h+=`<article class="q ${s.r!=null?"done":""}" id="${q.id}" style="--c:${c.c}"><div class="meta"><span class="badge">${q.niv}</span></div><h3>${esc(q.t)}</h3>
+   <details><summary>Éléments de réponse attendus</summary><ul>${q.a.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></details>
+   <div class="rate" role="group" aria-label="Évaluation">${T.map((t,i)=>`<button data-q="${q.id}" data-r="${i}" aria-pressed="${s.r===i}">${i} · ${t}</button>`).join("")}</div>
+   <textarea data-n="${q.id}" placeholder="Notes sur la réponse du candidat…" aria-label="Notes">${esc(s.n||"")}</textarea></article>`;});
+  h+="</div>";});
+ $("#list").innerHTML=h||"<p>Aucune question pour ce filtre.</p>";
+ document.querySelectorAll(".rate button").forEach(b=>b.onclick=()=>{const id=b.dataset.q,r=+b.dataset.r;st[id]=st[id]||{};st[id].r=st[id].r===r?null:r;list();stats();saveAnswer(id);});
+ document.querySelectorAll("textarea[data-n]").forEach(t=>t.oninput=()=>{const id=t.dataset.n;st[id]=st[id]||{};st[id].n=t.value;debounce("a"+id,()=>saveAnswer(id));});
+}
+function score(qs){const r=qs.filter(q=>st[q.id]&&st[q.id].r!=null);return{n:r.length,p:r.length?Math.round(r.reduce((s,q)=>s+st[q.id].r,0)/(r.length*3)*100):null};}
+function verdict(p){return p==null?"Notez au moins une question pour obtenir une appréciation.":p>=75?"Profil très solide : les compétences attendues pour le poste semblent maîtrisées.":p>=55?"Profil correct : base N2 présente, quelques points à approfondir.":p>=35?"Profil fragile : des lacunes importantes par rapport à la fiche de poste.":"Profil insuffisant pour un poste N2 autonome.";}
+function stats(){
+ const g=score(all);$("#prog").textContent=g.n+"/"+all.length;$("#pfill").style.width=g.n/all.length*100+"%";$("#gscore").textContent=g.p==null?"–":g.p+" %";
+ $("#bars").innerHTML=CATS.map(c=>{const s=score(all.filter(q=>q.cat===c));return `<div class="bar" style="--c:${c.c}"><span>${c.n} <small style="color:var(--mut)">(${s.n}/${c.q.length})</small></span><div class="track"><div class="fill" style="width:${s.p||0}%"></div></div><b>${s.p==null?"–":s.p+" %"}</b></div>`}).join("");
+ $("#verdict").textContent=(g.p==null?"":"Score global : "+g.p+" %. ")+verdict(g.p);
+}
+function summary(){
+ let t=`ENTRETIEN – Technicien(ne) support informatique (Hyteck)\nCandidat(e) : ${$("#nom").value||"–"}\nDate : ${$("#date").value||"–"}\nÉvaluateur : ${$("#int").value||"–"}\n\nScore global : ${score(all).p??"–"} %\n`;
+ CATS.forEach(c=>{const s=score(all.filter(q=>q.cat===c));t+=`- ${c.n} : ${s.p==null?"–":s.p+" %"} (${s.n}/${c.q.length})\n`});
+ return t+"\nAvis général : "+($("#gen").value||"–");
+}
+
+/* ---------- Événements ---------- */
+["nom","date","int","gen"].forEach(k=>$("#"+k).addEventListener("input",()=>debounce("cand",saveCand)));
+$("#niv").onchange=list;
+$("#csel").onchange=e=>openCand(e.target.value);
+$("#cnew").onclick=async()=>{
+ const {data,error}=await sb.from("candidates").insert({name:"Nouveau candidat",interview_date:new Date().toISOString().slice(0,10)}).select("id").single();
+ if(error){status("Création impossible : "+error.message,true);return;}
+ await loadCands(data.id);$("#nom").select();
+};
+$("#del").onclick=async()=>{
+ if(!candId||!confirm("Supprimer définitivement ce candidat et toutes ses évaluations ?"))return;
+ const {error}=await sb.from("candidates").delete().eq("id",candId);
+ if(error){status("Suppression impossible : "+error.message,true);return;}
+ candId=null;st={};await loadCands();status("Candidat supprimé");
+};
+$("#rand").onclick=()=>{const niv=$("#niv").value;const p=all.filter(q=>(cur==="all"||q.cat.id===cur)&&(!niv||q.niv===niv)&&!(st[q.id]&&st[q.id].r!=null));if(!p.length){alert("Toutes les questions de ce filtre sont déjà notées.");return;}
+ const q=p[Math.floor(Math.random()*p.length)],el=document.getElementById(q.id);el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("pick");setTimeout(()=>el.classList.remove("pick"),1500);};
+$("#print").onclick=()=>window.print();
+$("#copy").onclick=async()=>{try{await navigator.clipboard.writeText(summary());$("#copy").textContent="Synthèse copiée";}catch(e){prompt("Copiez la synthèse :",summary());}setTimeout(()=>$("#copy").textContent="Copier la synthèse",1800);};
+
+/* ---------- Authentification ---------- */
+async function login(){
+ $("#lerr").textContent="";
+ const {error}=await sb.auth.signInWithPassword({email:$("#lmail").value.trim(),password:$("#lpass").value});
+ if(error)$("#lerr").textContent="Connexion refusée : e-mail ou mot de passe incorrect.";
+}
+$("#lgo").onclick=login;
+$("#lpass").addEventListener("keydown",e=>{if(e.key==="Enter")login();});
+$("#logout").onclick=()=>sb.auth.signOut();
+
+function boot(){
+ if(!configured()){$("#lerr").textContent="Renseignez SUPABASE_URL et SUPABASE_ANON_KEY au début du script de index.html.";$("#lgo").disabled=true;return;}
+ sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+ const apply=async session=>{
+  $("#login").classList.toggle("hide",!!session);
+  if(session){$("#who").textContent=session.user.email;await loadCands();}
+  else{candId=null;$("#lpass").value="";}
+ };
+ sb.auth.getSession().then(({data})=>apply(data.session));
+ sb.auth.onAuthStateChange((ev,s)=>{if(ev==="SIGNED_IN"||ev==="SIGNED_OUT")apply(s);});
+}
+boot();
+</script>
+</body>
+</html>
