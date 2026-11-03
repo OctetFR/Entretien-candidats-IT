@@ -11,7 +11,7 @@
 --c0:#3b6cf6;--c1:#8b4df0;--c2:#12a97a;--c3:#0fa3b8;--c4:#ee5a4f;--c5:#f2a01c;--c6:#d6336c;--c7:#e0447f}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-header{background:linear-gradient(120deg,#2a1f7a,#8b4df0 55%,#ee5a4f);color:#fff;padding:20px 24px 72px}
+header{background:linear-gradient(120deg,#2b3340,#3f4a5a);color:#fff;padding:20px 24px 72px}
 .wrap{max-width:1080px;margin:0 auto}
 .top{display:flex;justify-content:flex-end;align-items:center;gap:12px;font-size:.85rem;margin-bottom:8px}
 .top button{font:inherit;font-size:.8rem;background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:8px;padding:5px 12px;cursor:pointer}
@@ -24,7 +24,7 @@ header p{margin:0;opacity:.9;max-width:62ch}
 .candbar>div{flex:1;min-width:220px}
 .candbar label{font-size:.8rem;opacity:.85;display:block;margin-bottom:4px}
 .candbar select{width:100%;padding:10px 12px;border:0;border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
-.hbtn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:#fff;color:#2a1f7a}
+.hbtn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:#fff;color:#2b3340}
 .hbtn.d{background:rgba(255,255,255,.2);color:#fff}
 #status{font-size:.82rem;opacity:.9;margin-left:auto}
 main{margin-top:-44px;padding:0 16px 120px}
@@ -70,7 +70,7 @@ textarea{width:100%;margin-top:10px;border:2px solid var(--line);border-radius:1
 #bottom .track{flex:1;min-width:120px}
 #bottom b{font-size:1.1rem}
 #empty{background:var(--card);border-radius:16px;padding:40px 24px;text-align:center;color:var(--mut);box-shadow:0 8px 28px rgba(42,31,122,.15)}
-#login{position:fixed;inset:0;z-index:20;background:linear-gradient(120deg,#2a1f7a,#8b4df0 55%,#ee5a4f);display:flex;align-items:center;justify-content:center;padding:16px}
+#login{position:fixed;inset:0;z-index:20;background:linear-gradient(120deg,#2b3340,#3f4a5a);display:flex;align-items:center;justify-content:center;padding:16px}
 .lbox{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .lbox h2{margin:0 0 4px}.lbox p{margin:0 0 18px;color:var(--mut);font-size:.92rem}
 .lbox input{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px}
@@ -78,7 +78,7 @@ textarea{width:100%;margin-top:10px;border:2px solid var(--line);border-radius:1
 #lerr{color:#c0392b;font-size:.88rem;margin-top:10px;min-height:1.2em}
 .hide{display:none!important}
 @media(max-width:620px){.bar{grid-template-columns:1fr 50px}.bar .track{grid-column:1/-1;order:3}}
-@media print{header{background:#2a1f7a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.tabs,.tools,#bottom,.rate,.candbar,.top{display:none}.q{break-inside:avoid}details{display:block}.fill,.q{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media print{header{background:#2b3340!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.tabs,.tools,#bottom,.rate,.candbar,.top{display:none}.q{break-inside:avoid}details{display:block}.fill,.q{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -97,8 +97,7 @@ textarea{width:100%;margin-top:10px;border:2px solid var(--line);border-radius:1
 
 <header><div class="wrap">
 <div class="top"><span id="who"></span><button id="logout">Se déconnecter</button></div>
-<h1>Entretien technique : Technicien(ne) support informatique</h1>
-<p>Hyteck · DSI, pôle Infrastructure. Support N2 de proximité et préparation du matériel à Paris. Questions tirées de la fiche de poste du 29/10/2026.</p>
+<h1>Technicien(ne) support IT</h1>
 <div class="candbar">
  <div><label for="csel">Candidat(e)</label><select id="csel"></select></div>
  <button class="hbtn" id="cnew">+ Nouveau candidat</button>
@@ -132,8 +131,8 @@ textarea{width:100%;margin-top:10px;border:2px solid var(--line);border-radius:1
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 /* ===== CONFIGURATION SUPABASE : à remplacer par vos valeurs (Project Settings > API) ===== */
-const SUPABASE_URL = "https://jrwteizqpyyxyyjdmhvu.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_GjEV3FLAxROP7fOF2QZaHQ_3Ec6b0jq";
+const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIQUE";
 /* La clé "anon" est publique par conception : la sécurité repose sur la connexion et les règles RLS (voir supabase.sql). */
 
 const T=["Insuffisant","Partiel","Solide","Expert"];
