@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tâches – Coordination support IT</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d1b3a;--mut:#615f7d;--bg:#f4f3fb;--line:#e4e2f2}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:linear-gradient(120deg,#2b3340,#3f4a5a);color:#fff;padding:20px 24px 70px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;margin-bottom:8px}
+.top a{color:#fff;text-decoration:none;background:rgba(255,255,255,.18);padding:5px 12px;border-radius:8px}
+h1{font-size:clamp(1.5rem,4vw,2.3rem);margin:0;font-weight:800;letter-spacing:-.02em}
+main{margin-top:-42px;padding:0 16px 60px}
+.panel{background:#fff;border-radius:16px;box-shadow:0 8px 28px rgba(43,51,64,.15);padding:14px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}
+.tab{border:2px solid transparent;background:color-mix(in srgb,var(--c) 12%,#fff);color:var(--c);font:inherit;font-weight:600;font-size:.88rem;padding:8px 14px;border-radius:999px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.tab:hover{border-color:var(--c)}.tab[aria-pressed=true]{background:var(--c);color:#fff}
+.tab small{background:rgba(0,0,0,.14);border-radius:999px;padding:0 8px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;align-items:center}
+input,select,textarea{font:inherit;padding:9px 12px;border-radius:10px;border:2px solid var(--line);background:#fff;color:var(--ink);max-width:100%}
+#q{flex:1;min-width:200px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:#2b3340;color:#fff}
+.btn.alt{background:#fff;color:var(--ink);border:2px solid var(--line)}.btn.red{background:#fff;color:#c0392b;border:2px solid #f3c6c0}
+.btn.sm{padding:6px 12px;font-size:.84rem}.btn:hover{filter:brightness(1.12)}
+:focus-visible{outline:3px solid #f2a01c;outline-offset:2px}
+.t{background:#fff;border-radius:16px;border-left:8px solid var(--c);padding:16px 20px;margin:12px 0;box-shadow:0 2px 10px rgba(29,27,58,.07)}
+.t.done{opacity:.85}
+.th{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.t h3{margin:0;font-size:1.1rem}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.badge{font-size:.75rem;font-weight:600;padding:2px 10px;border-radius:999px;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c)}
+.badge.g{--c:#615f7d}
+.desc{color:var(--mut);font-size:.92rem;margin:4px 0 10px;white-space:pre-wrap}
+.dates{font-size:.82rem;color:var(--mut)}
+.prog{display:flex;align-items:center;gap:12px;margin:10px 0 6px}
+.track{flex:1;height:14px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;border-radius:99px;transition:width .5s,background .3s}
+.pct{font-weight:800;min-width:48px;text-align:right}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.steps button{font:inherit;font-size:.74rem;font-weight:600;border:0;border-bottom:5px solid var(--line);background:none;padding:4px 2px;color:var(--mut);cursor:pointer;text-align:center}
+.steps button.on{border-color:var(--c);color:var(--ink)}
+.steps button[aria-pressed=true]{color:var(--c);font-weight:800}
+.act{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.att a{font-size:.84rem;color:#3b6cf6;cursor:pointer;text-decoration:underline;margin-right:10px}
+dialog{border:0;border-radius:18px;padding:24px;width:min(560px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(29,27,58,.5)}
+dialog h2{margin:0 0 14px}
+dialog label{display:block;font-size:.82rem;font-weight:600;margin:10px 0 4px}
+dialog input,dialog select,dialog textarea{width:100%}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dact{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.plist{margin:14px 0;padding:0;list-style:none}
+.plist li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#2b3340;color:#fff;padding:10px 18px;border-radius:12px;font-size:.9rem;z-index:50;display:none}
+#toast.err{background:#c0392b}
+.empty{text-align:center;color:var(--mut);padding:40px}
+@media(max-width:560px){.row{grid-template-columns:1fr}.steps button{font-size:.66rem}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="index.html">← Retour aux entretiens</a><span id="who"></span></div>
+<h1>Tâches de coordination support IT</h1>
+</div></header>
+
+<main><div class="wrap">
+<div class="panel"><nav class="tabs" id="tabs" aria-label="Rubriques"></nav></div>
+<div class="bar">
+<label for="q" class="sr" hidden>Recherche</label><input id="q" type="search" placeholder="🔍 Rechercher (titre, description, prestataire…)">
+<select id="fs" aria-label="Filtrer par statut"></select>
+<select id="fp" aria-label="Filtrer par prestataire"></select>
+<button class="btn" id="new">+ Nouvelle tâche</button>
+<button class="btn alt" id="adm">⚙ Prestataires</button>
+</div>
+<div id="list"></div>
+</div></main>
+
+<dialog id="dt"><form method="dialog" id="ft">
+<h2 id="dtt">Nouvelle tâche</h2>
+<label for="f_title">Titre *</label><input id="f_title" required>
+<div class="row"><div><label for="f_cat">Rubrique</label><select id="f_cat"></select></div>
+<div><label for="f_prov">Prestataire</label><select id="f_prov"></select></div></div>
+<label for="f_st">Statut</label><select id="f_st"></select>
+<label for="f_desc">Description</label><textarea id="f_desc" rows="4"></textarea>
+<label for="f_files">Pièces jointes</label><input id="f_files" type="file" multiple>
+<div id="f_att" class="att" style="margin-top:8px"></div>
+<div class="dact"><button type="button" class="btn alt" id="cancel">Annuler</button><button class="btn" id="save" type="submit">Enregistrer</button></div>
+</form></dialog>
+
+<dialog id="dp">
+<h2>Administration : prestataires</h2>
+<div class="row"><div><label for="p_name">Nom *</label><input id="p_name" placeholder="Ex. Dell, Orange…"></div><div><label for="p_ct">Contact</label><input id="p_ct" placeholder="Nom, e-mail ou téléphone"></div></div>
+<div class="dact" style="margin-top:10px"><button class="btn" id="padd">Ajouter</button></div>
+<ul class="plist" id="plist"></ul>
+<div class="dact"><button class="btn alt" id="pclose">Fermer</button></div>
+</dialog>
+<div id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* Mêmes valeurs que dans index.html */
+const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIQUE";
+const BUCKET="task-files";
+/* Statuts : [nom, % d’avancement, couleur]. Modifiables ici (le nom doit aussi figurer dans supabase_taches.sql si vous ajoutez une contrainte). */
+const ST=[["À faire",0,"#8a8fa3"],["En cours",25,"#3b6cf6"],["En attente",50,"#f2a01c"],["Attente livraison",75,"#8b4df0"],["Terminé",100,"#12a97a"]];
+const CAT=[["Devis et Commandes","#3b6cf6"],["Matériel en interne","#12a97a"],["Yooz","#f2a01c"],["Autres tâches","#d6336c"]];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const fmt=d=>d?new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric"}):"–";
+const stI=n=>Math.max(0,ST.findIndex(s=>s[0]===n));
+let sb,tasks=[],provs=[],cat="all",edit=null,rm=[];
+
+function toast(m,err){const t=$("#toast");t.textContent=m;t.className=err?"err":"";t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",err?5000:2200);}
+const pname=id=>(provs.find(p=>p.id===id)||{}).name||"";
+
+async function load(){
+ const [t,p]=await Promise.all([sb.from("tasks").select("*").order("created_at",{ascending:false}),sb.from("providers").select("*").order("name")]);
+ if(t.error||p.error){toast("Erreur de chargement : "+(t.error||p.error).message,true);return;}
+ tasks=t.data;provs=p.data;fillSel();render();
+}
+function fillSel(){
+ const fs=$("#fs").value,fp=$("#fp").value;
+ $("#fs").innerHTML='<option value="">Tous les statuts</option>'+ST.map(s=>`<option>${s[0]}</option>`).join("");
+ $("#fp").innerHTML='<option value="">Tous les prestataires</option>'+provs.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+ $("#fs").value=fs;$("#fp").value=fp;
+ $("#f_cat").innerHTML=CAT.map(c=>`<option>${c[0]}</option>`).join("");
+ $("#f_st").innerHTML=ST.map(s=>`<option>${s[0]}</option>`).join("");
+ $("#f_prov").innerHTML='<option value="">— Aucun —</option>'+provs.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
+}
+function match(t){
+ const q=$("#q").value.trim().toLowerCase(),fs=$("#fs").value,fp=$("#fp").value;
+ if(fs&&t.status!==fs)return false;if(fp&&t.provider_id!==fp)return false;
+ return !q||[t.title,t.description,pname(t.provider_id),t.category,t.status,(t.attachments||[]).map(a=>a.name).join(" ")].join(" ").toLowerCase().includes(q);
+}
+function render(){
+ $("#tabs").innerHTML=[["all","Toutes les tâches","#2b3340"]].concat(CAT.map(c=>[c[0],c[0],c[1]])).map(([id,n,c])=>`<button class="tab" style="--c:${c}" data-id="${id}" aria-pressed="${cat===id}">${n}<small>${tasks.filter(t=>(id==="all"||t.category===id)&&t.status!=="Terminé").length}</small></button>`).join("");
+ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{cat=b.dataset.id;render();});
+ const rows=tasks.filter(t=>(cat==="all"||t.category===cat)&&match(t));
+ $("#list").innerHTML=rows.length?rows.map(card).join(""):'<div class="empty">Aucune tâche à afficher.</div>';
+ document.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>setStatus(b.dataset.id,b.dataset.step));
+ document.querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>openForm(tasks.find(t=>t.id===b.dataset.ed)));
+ document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>delTask(b.dataset.del));
+ document.querySelectorAll("[data-file]").forEach(a=>a.onclick=()=>openFile(a.dataset.file));
+}
+function card(t){
+ const i=stI(t.status),s=ST[i],c=(CAT.find(x=>x[0]===t.category)||[0,"#615f7d"])[1],prov=pname(t.provider_id);
+ return `<article class="t ${i===ST.length-1?"done":""}" style="--c:${c}">
+ <div class="th"><h3>${esc(t.title)}</h3><span class="dates">Créée le ${fmt(t.created_at)} · Clôturée le ${fmt(t.closed_at)}</span></div>
+ <div class="badges"><span class="badge">${esc(t.category)}</span>${prov?`<span class="badge g">🏢 ${esc(prov)}</span>`:""}<span class="badge" style="--c:${s[2]}">${s[0]}</span></div>
+ ${t.description?`<div class="desc">${esc(t.description)}</div>`:""}
+ <div class="prog" aria-label="Avancement ${s[1]} %"><div class="track"><div class="fill" style="width:${s[1]}%;background:${s[2]}"></div></div><span class="pct" style="color:${s[2]}">${s[1]} %</span></div>
+ <div class="steps">${ST.map((x,k)=>`<button data-id="${t.id}" data-step="${x[0]}" class="${k<=i?"on":""}" style="--c:${x[2]}" aria-pressed="${k===i}">${x[0]}</button>`).join("")}</div>
+ <div class="act"><span class="att">${(t.attachments||[]).map(a=>`<a data-file="${esc(a.path)}">📎 ${esc(a.name)}</a>`).join("")}</span><span style="flex:1"></span>
+ <button class="btn alt sm" data-ed="${t.id}">Modifier</button><button class="btn red sm" data-del="${t.id}">Supprimer</button></div></article>`;
+}
+async function setStatus(id,status){
+ const {data,error}=await sb.from("tasks").update({status}).eq("id",id).select().single();
+ if(error)return toast("Échec : "+error.message,true);
+ tasks=tasks.map(t=>t.id===id?data:t);render();
+}
+async function openFile(path){
+ const {data,error}=await sb.storage.from(BUCKET).createSignedUrl(path,120);
+ if(error)return toast("Fichier inaccessible : "+error.message,true);window.open(data.signedUrl,"_blank","noopener");
+}
+async function delTask(id){
+ const t=tasks.find(x=>x.id===id);if(!confirm(`Supprimer la tâche « ${t.title} » ?`))return;
+ const paths=(t.attachments||[]).map(a=>a.path);if(paths.length)await sb.storage.from(BUCKET).remove(paths);
+ const {error}=await sb.from("tasks").delete().eq("id",id);
+ if(error)return toast("Suppression impossible : "+error.message,true);
+ tasks=tasks.filter(x=>x.id!==id);render();toast("Tâche supprimée");
+}
+
+/* Formulaire tâche */
+function openForm(t){
+ edit=t||null;rm=[];$("#ft").reset();$("#dtt").textContent=t?"Modifier la tâche":"Nouvelle tâche";
+ $("#f_title").value=t?.title||"";$("#f_cat").value=t?.category||(cat==="all"?CAT[0][0]:cat);$("#f_prov").value=t?.provider_id||"";
+ $("#f_st").value=t?.status||ST[0][0];$("#f_desc").value=t?.description||"";drawAtt();$("#dt").showModal();
+}
+function drawAtt(){
+ const a=(edit?.attachments||[]).filter(x=>!rm.includes(x.path));
+ $("#f_att").innerHTML=a.map(x=>`<span style="margin-right:12px">📎 ${esc(x.name)} <a data-rm="${esc(x.path)}" title="Retirer">✕</a></span>`).join("");
+ document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{rm.push(b.dataset.rm);drawAtt();});
+}
+$("#ft").onsubmit=async e=>{
+ e.preventDefault();$("#save").disabled=true;
+ const row={title:$("#f_title").value.trim(),category:$("#f_cat").value,provider_id:$("#f_prov").value||null,status:$("#f_st").value,description:$("#f_desc").value};
+ try{
+  let id=edit?.id,att=(edit?.attachments||[]).filter(x=>!rm.includes(x.path));
+  if(edit){const r=await sb.from("tasks").update(row).eq("id",id);if(r.error)throw r.error;}
+  else{const r=await sb.from("tasks").insert(row).select("id").single();if(r.error)throw r.error;id=r.data.id;}
+  for(const f of $("#f_files").files){
+   const path=`${id}/${Date.now()}_${f.name.replace(/[^\w.\-]+/g,"_")}`;
+   const u=await sb.storage.from(BUCKET).upload(path,f);if(u.error)throw u.error;att.push({name:f.name,path});
+  }
+  if(rm.length)await sb.storage.from(BUCKET).remove(rm);
+  const r2=await sb.from("tasks").update({attachments:att}).eq("id",id);if(r2.error)throw r2.error;
+  $("#dt").close();toast("Tâche enregistrée ✓");await load();
+ }catch(err){toast("Échec : "+err.message,true);}
+ $("#save").disabled=false;
+};
+$("#cancel").onclick=()=>$("#dt").close();
+$("#new").onclick=()=>openForm(null);
+
+/* Administration des prestataires */
+function drawProv(){
+ $("#plist").innerHTML=provs.length?provs.map(p=>`<li><span><b>${esc(p.name)}</b>${p.contact?` <small style="color:var(--mut)">· ${esc(p.contact)}</small>`:""}<br><small style="color:var(--mut)">${tasks.filter(t=>t.provider_id===p.id).length} tâche(s)</small></span><span><button class="btn alt sm" data-pr="${p.id}">Renommer</button> <button class="btn red sm" data-pd="${p.id}">Supprimer</button></span></li>`).join(""):"<li>Aucun prestataire.</li>";
+ document.querySelectorAll("[data-pr]").forEach(b=>b.onclick=async()=>{const p=provs.find(x=>x.id===b.dataset.pr),n=prompt("Nouveau nom :",p.name);if(!n||!n.trim())return;const r=await sb.from("providers").update({name:n.trim()}).eq("id",p.id);if(r.error)return toast(r.error.message,true);await load();drawProv();});
+ document.querySelectorAll("[data-pd]").forEach(b=>b.onclick=async()=>{const p=provs.find(x=>x.id===b.dataset.pd);if(!confirm(`Supprimer « ${p.name} » ? Les tâches liées resteront, sans prestataire.`))return;const r=await sb.from("providers").delete().eq("id",p.id);if(r.error)return toast(r.error.message,true);await load();drawProv();});
+}
+$("#adm").onclick=()=>{drawProv();$("#dp").showModal();};
+$("#pclose").onclick=()=>$("#dp").close();
+$("#padd").onclick=async()=>{
+ const name=$("#p_name").value.trim();if(!name)return toast("Saisissez un nom",true);
+ const r=await sb.from("providers").insert({name,contact:$("#p_ct").value.trim()});
+ if(r.error)return toast(r.error.code==="23505"?"Ce prestataire existe déjà":r.error.message,true);
+ $("#p_name").value=$("#p_ct").value="";await load();drawProv();toast("Prestataire ajouté ✓");
+};
+
+["q","fs","fp"].forEach(k=>$("#"+k).addEventListener(k==="q"?"input":"change",render));
+
+(async()=>{
+ if(SUPABASE_URL.includes("VOTRE-PROJET")){$("#list").innerHTML='<div class="empty">Renseignez SUPABASE_URL et SUPABASE_ANON_KEY dans taches.html.</div>';return;}
+ sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+ const {data}=await sb.auth.getSession();
+ if(!data.session){location.href="index.html";return;}
+ $("#who").textContent=data.session.user.email;
+ sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT")location.href="index.html";});
+ fillSel();await load();
+})();
+</script>
+</body>
+</html>
