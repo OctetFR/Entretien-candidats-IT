@@ -130,8 +130,8 @@ dialog input,dialog select,dialog textarea{width:100%}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 /* Mêmes valeurs que dans index.html */
-const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
-const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIQUE";
+const SUPABASE_URL = "https://jrwteizqpyyxyyjdmhvu.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_GjEV3FLAxROP7fOF2QZaHQ_3Ec6b0jq";
 const BUCKET="task-files";
 /* Statuts chargés depuis Supabase (table statuses). Valeurs de secours si la table n’existe pas encore. */
 const DEF=[["À faire","#64748b",10,false],["En cours","#2563eb",20,false],["En attente","#f59e0b",30,false],["Attente livraison","#8b5cf6",40,false],["Terminé","#10b981",1000,true]].map(a=>({id:null,name:a[0],color:a[1],ord:a[2],is_closed:a[3]}));
