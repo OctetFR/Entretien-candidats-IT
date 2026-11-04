@@ -89,9 +89,10 @@ dialog input,dialog select,dialog textarea{width:100%}
   <h2 style="margin-top:14px">Actions</h2>
   <button class="btn" id="new">+ Nouvelle tâche</button>
   <button class="btn alt" id="adm">⚙ Prestataires</button>
+  <button class="btn alt" id="sadm">🏷 Statuts</button>
  </aside>
  <section>
-  <div class="bar"><label for="q" hidden>Recherche</label><input id="q" type="search" placeholder="🔍 Rechercher (titre, description, prestataire…)"><select id="fp" aria-label="Filtrer par prestataire"></select></div>
+  <div class="bar"><label for="q" hidden>Recherche</label><input id="q" type="search" placeholder="🔍 Rechercher (titre, description, prestataire…)"><select id="fp" aria-label="Filtrer par prestataire"></select><button class="btn alt" id="tgl"></button></div>
   <div id="list"></div>
  </section>
 </div>
@@ -116,16 +117,27 @@ dialog input,dialog select,dialog textarea{width:100%}
 <ul class="plist" id="plist"></ul>
 <div class="dact"><button class="btn alt" id="pclose">Fermer</button></div>
 </dialog>
+<dialog id="ds">
+<h2>Administration : statuts</h2>
+<div class="row"><div><label for="s_name">Nom *</label><input id="s_name" placeholder="Ex. Devis reçu, Annulé…"></div><div><label for="s_col">Couleur</label><input id="s_col" type="color" value="#0891b2" style="height:42px;padding:3px"></div></div>
+<label style="display:flex;gap:8px;align-items:flex-start;font-weight:600;font-size:.85rem;margin-top:12px"><input type="checkbox" id="s_closed" style="width:auto;margin-top:4px"> Statut de clôture : la tâche disparaît de la liste et reçoit une date de clôture</label>
+<div class="dact" style="margin-top:10px"><button class="btn" id="sadd">Ajouter</button></div>
+<ul class="plist" id="slist"></ul>
+<div class="dact"><button class="btn alt" id="sclose">Fermer</button></div>
+</dialog>
 <div id="toast" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 /* Mêmes valeurs que dans index.html */
-const SUPABASE_URL = "https://jrwteizqpyyxyyjdmhvu.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_GjEV3FLAxROP7fOF2QZaHQ_3Ec6b0jq";
+const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIQUE";
 const BUCKET="task-files";
-/* Statuts : [nom, % d’avancement (sert à la longueur de la barre), couleur] */
-const ST=[["À faire",0,"#64748b"],["En cours",25,"#2563eb"],["En attente",50,"#f59e0b"],["Attente livraison",75,"#8b5cf6"],["Terminé",100,"#10b981"]];
+/* Statuts chargés depuis Supabase (table statuses). Valeurs de secours si la table n’existe pas encore. */
+const DEF=[["À faire","#64748b",10,false],["En cours","#2563eb",20,false],["En attente","#f59e0b",30,false],["Attente livraison","#8b5cf6",40,false],["Terminé","#10b981",1000,true]].map(a=>({id:null,name:a[0],color:a[1],ord:a[2],is_closed:a[3]}));
+let ST=[],SR=[];
+function buildST(rows){SR=rows;const nc=rows.filter(r=>!r.is_closed);ST=rows.map(r=>[r.name,r.is_closed?100:Math.round(nc.indexOf(r)/nc.length*100),r.color,r.is_closed]);}
+buildST(DEF);
 const CAT=[["Devis et Commandes","#2563eb"],["Matériel en interne","#059669"],["Yooz","#d97706"],["Autres tâches","#db2777"]];
 const PAL=["#2563eb","#db2777","#059669","#d97706","#7c3aed","#0891b2","#dc2626","#4f46e5","#65a30d","#c026d3"];
 
@@ -133,14 +145,16 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const fmt=d=>d?new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric"}):"–";
 const stI=n=>Math.max(0,ST.findIndex(s=>s[0]===n));
-let sb,tasks=[],provs=[],cat="all",fsv="",edit=null,rm=[];
+const cl=t=>!!ST[stI(t.status)][3];
+let sb,tasks=[],provs=[],cat="all",fsv="",edit=null,rm=[],showClosed=false,warned=false;
 
 function toast(m,err){const t=$("#toast");t.textContent=m;t.className=err?"err":"";t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",err?5000:2200);}
 const pname=id=>(provs.find(p=>p.id===id)||{}).name||"";
 const pcol=id=>{const i=provs.findIndex(p=>p.id===id);return i<0?"#64748b":PAL[i%PAL.length];};
 
 async function load(){
- const [t,p]=await Promise.all([sb.from("tasks").select("*").order("created_at",{ascending:false}),sb.from("providers").select("*")]);
+ const [t,p,sr]=await Promise.all([sb.from("tasks").select("*").order("created_at",{ascending:false}),sb.from("providers").select("*"),sb.from("statuses").select("*").order("ord")]);
+ if(sr.error||!sr.data.length){buildST(DEF);if(!warned){warned=true;toast("Table des statuts absente : exécutez supabase_statuts.sql",true);}}else buildST(sr.data);
  if(t.error||p.error){toast("Erreur de chargement : "+(t.error||p.error).message,true);return;}
  tasks=t.data;provs=p.data.sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"}));fillSel();render();
 }
@@ -159,16 +173,17 @@ function match(t){
 }
 function render(){
  const inCat=tasks.filter(t=>cat==="all"||t.category===cat);
+ $("#tgl").textContent=(showClosed?"🙈 Masquer":"👁 Afficher")+" les terminées ("+inCat.filter(cl).length+")";
  $("#kpis").innerHTML=ST.map(s=>`<button class="kpi" style="--c:${s[2]}" data-s="${s[0]}" aria-pressed="${fsv===s[0]}"><b>${inCat.filter(t=>t.status===s[0]).length}</b><span>${s[0]}</span></button>`).join("");
  document.querySelectorAll(".kpi").forEach(b=>b.onclick=()=>{fsv=fsv===b.dataset.s?"":b.dataset.s;render();});
- $("#tabs").innerHTML=[["all","Toutes les tâches","#0f5fd7"]].concat(CAT.map(c=>[c[0],c[0],c[1]])).map(([id,n,c])=>`<button class="tab" style="--c:${c}" data-id="${id}" aria-pressed="${cat===id}">${n}<small>${tasks.filter(t=>(id==="all"||t.category===id)&&t.status!=="Terminé").length}</small></button>`).join("");
+ $("#tabs").innerHTML=[["all","Toutes les tâches","#0f5fd7"]].concat(CAT.map(c=>[c[0],c[0],c[1]])).map(([id,n,c])=>`<button class="tab" style="--c:${c}" data-id="${id}" aria-pressed="${cat===id}">${n}<small>${tasks.filter(t=>(id==="all"||t.category===id)&&!cl(t)).length}</small></button>`).join("");
  document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{cat=b.dataset.id;render();});
- const rows=inCat.filter(t=>(!fsv||t.status===fsv)&&match(t));
+ const rows=inCat.filter(t=>(!fsv||t.status===fsv)&&(showClosed||!cl(t)||t.status===fsv)&&match(t));
  /* Regroupement par prestataire (A→Z), « Sans prestataire » en dernier ; tâches ouvertes avant les terminées */
  const g={};rows.forEach(t=>(g[t.provider_id||""]=g[t.provider_id||""]||[]).push(t));
  const keys=Object.keys(g).sort((a,b)=>!a?1:!b?-1:pname(a).localeCompare(pname(b),"fr",{sensitivity:"base"}));
  $("#list").innerHTML=keys.length?keys.map(k=>{
-  const arr=g[k].sort((a,b)=>(a.status==="Terminé")-(b.status==="Terminé")||new Date(b.created_at)-new Date(a.created_at));
+  const arr=g[k].sort((a,b)=>(+cl(a))-(+cl(b))||new Date(b.created_at)-new Date(a.created_at));
   const p=provs.find(x=>x.id===k),n=p?p.name:"Sans prestataire";
   return `<div class="grp"><div class="gh" style="--c:${pcol(k)}"><div class="av">${esc(n[0].toUpperCase())}</div><div><h2>${esc(n)}</h2>${p&&p.contact?`<small>${esc(p.contact)}</small>`:""}</div><span class="n">${arr.length}</span></div>${arr.map(card).join("")}</div>`;
  }).join(""):'<div class="empty">Aucune tâche à afficher.</div>';
@@ -179,7 +194,7 @@ function render(){
 }
 function card(t){
  const i=stI(t.status),s=ST[i],c=(CAT.find(x=>x[0]===t.category)||[0,"#64748b"])[1];
- return `<article class="t ${i===ST.length-1?"done":""}" style="--c:${c}">
+ return `<article class="t ${s[3]?"done":""}" style="--c:${c}">
  <div class="th"><h3>${esc(t.title)}</h3><span class="dates">Créée le ${fmt(t.created_at)} · Clôturée le ${fmt(t.closed_at)}</span></div>
  <div class="badges"><span class="badge" style="--c:${c}">${esc(t.category)}</span><span class="badge" style="--c:${s[2]}">${s[0]}</span></div>
  ${t.description?`<div class="desc">${esc(t.description)}</div>`:""}
@@ -251,6 +266,29 @@ $("#padd").onclick=async()=>{
  $("#p_name").value=$("#p_ct").value="";await load();drawProv();toast("Prestataire ajouté ✓");
 };
 
+$("#tgl").onclick=()=>{showClosed=!showClosed;render();};
+/* Administration des statuts */
+function drawSt(){
+ $("#slist").innerHTML=SR.map(r=>`<li><span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${esc(r.color)};margin-right:8px"></span><b>${esc(r.name)}</b>${r.is_closed?' <small style="color:var(--mut)">· clôture</small>':""}<br><small style="color:var(--mut)">${tasks.filter(t=>t.status===r.name).length} tâche(s)</small></span><button class="btn red sm" data-sd="${r.id}">Supprimer</button></li>`).join("");
+ document.querySelectorAll("[data-sd]").forEach(b=>b.onclick=async()=>{
+  const r=SR.find(x=>x.id===b.dataset.sd);if(!r)return;
+  if(tasks.some(t=>t.status===r.name))return toast("Impossible : des tâches utilisent encore ce statut.",true);
+  if(SR.filter(x=>x.is_closed===r.is_closed).length<2)return toast(r.is_closed?"Conservez au moins un statut de clôture.":"Conservez au moins un statut de travail.",true);
+  if(!confirm(`Supprimer le statut « ${r.name} » ?`))return;
+  const d=await sb.from("statuses").delete().eq("id",r.id);if(d.error)return toast(d.error.message,true);
+  await load();drawSt();
+ });
+}
+$("#sadm").onclick=()=>{drawSt();$("#ds").showModal();};
+$("#sclose").onclick=()=>$("#ds").close();
+$("#sadd").onclick=async()=>{
+ const name=$("#s_name").value.trim(),closed=$("#s_closed").checked;if(!name)return toast("Saisissez un nom",true);
+ if(!SR[0]||!SR[0].id)return toast("Exécutez d’abord supabase_statuts.sql",true);
+ const pool=closed?SR:SR.filter(x=>!x.is_closed),ord=Math.max(0,...pool.map(x=>x.ord))+10;
+ const a=await sb.from("statuses").insert({name,color:$("#s_col").value,ord,is_closed:closed});
+ if(a.error)return toast(a.error.code==="23505"?"Ce statut existe déjà":a.error.message,true);
+ $("#s_name").value="";$("#s_closed").checked=false;await load();drawSt();toast("Statut ajouté ✓");
+};
 $("#q").addEventListener("input",render);$("#fp").addEventListener("change",render);
 
 (async()=>{
